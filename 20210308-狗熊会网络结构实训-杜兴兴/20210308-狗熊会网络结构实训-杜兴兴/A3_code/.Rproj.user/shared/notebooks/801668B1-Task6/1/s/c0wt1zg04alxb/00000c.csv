@@ -1,0 +1,1 @@
+"0","text(5 ,mean(test$churn)+0.002,paste0('平均流失率 = ', as.character(round(mean(test$churn),3)*100), '%'))"

@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: com.dameng.jdbc.drivers
+Bundle-SymbolicName: com.dameng.jdbc.drivers
+Bundle-Version: 8.0.0
+Bundle-Vendor: dameng.com
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: DmJdbcDriver.jar,
+ .
+Export-Package: dm.jdbc.driver

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+  <connections>
+    <connection name="实例连接">
+      <host>10.55.129.36</host>
+      <port>5236</port>
+      <authtype>0</authtype>
+      <username>DMCX</username>
+      <password>6D6F9781AF0CFB225D58373687D03F59</password>
+      <savepassword>true</savepassword>
+      <productenvironment>false</productenvironment>
+      <isMpp>false</isMpp>
+      <isGlobalMpp>false</isGlobalMpp>
+      <description>本地连接</description>
+      <connProps/>
+    </connection>
+  </connections>
+</root>

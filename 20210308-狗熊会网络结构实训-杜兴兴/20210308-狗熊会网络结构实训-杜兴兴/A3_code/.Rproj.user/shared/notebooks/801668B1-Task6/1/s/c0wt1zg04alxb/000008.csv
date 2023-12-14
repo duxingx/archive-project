@@ -1,0 +1,2 @@
+"0","labels <- paste0(round(t$lossrate,3)*100,'%')"
+"0","text(1:5*1.2-0.5, t$lossrate-0.001, labels)"

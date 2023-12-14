@@ -1,0 +1,18 @@
+"0","rm(list=ls())"
+"0","# install.packages(""igraph"")"
+"0","library(igraph)"
+"2","程辑包‘igraph’是用R版本4.0.4 来建造的"
+"2","
+载入程辑包：‘igraph’
+
+"
+"2","The following objects are masked from ‘package:stats’:
+
+    decompose, spectrum
+
+"
+"2","The following object is masked from ‘package:base’:
+
+    union
+
+"

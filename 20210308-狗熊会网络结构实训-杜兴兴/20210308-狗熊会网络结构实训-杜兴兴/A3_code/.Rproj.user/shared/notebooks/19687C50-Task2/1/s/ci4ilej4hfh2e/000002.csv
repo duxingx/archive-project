@@ -1,0 +1,18 @@
+"0","# æ¸…é™¤å·¥ä½œç¯å¢ƒ"
+"0","rm(list = ls())"
+"0","library(igraph)  # åŠ è½½å¿…è¦åŒ…"
+"2","³Ì¼­°ü¡®igraph¡¯ÊÇÓÃR°æ±¾4.0.4 À´½¨ÔìµÄ"
+"2","
+ÔØÈë³Ì¼­°ü£º¡®igraph¡¯
+
+"
+"2","The following objects are masked from ¡®package:stats¡¯:
+
+    decompose, spectrum
+
+"
+"2","The following object is masked from ¡®package:base¡¯:
+
+    union
+
+"

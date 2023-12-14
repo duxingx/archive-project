@@ -1,0 +1,140 @@
+library(stats4)
+library(splines)
+library(VGAM)
+
+loglikelihood  <-function(theta, y, x=NULL,cut=15){
+    if (is.null(x)){
+        xmatrix=matrix(1,nrow=length(y),ncol=1);
+    }else  {xmatrix=cbind(1,x);}
+    rho=theta[1];
+    beta=theta[-1];
+    pred=exp(xmatrix %*% beta);
+    like=(y<cut)*((y==0)*log((rho+(1-rho)*exp(-pred)))+(y>0)*log((1-rho)*dpois(y,pred)))+
+        (y>=cut)*log((1-rho)*ppois(cut-1,pred,lower.tail = F))
+    llike = sum(like)
+    return(llike);
+}
+
+likelihoodp<-function(theta,y,x=NULL,cut=15){
+    if (is.null(x)){
+        xmatrix=matrix(1,nrow=length(y),ncol=1);
+    }else  {xmatrix=cbind(1,x);}
+    beta=theta   # 修改：需要截距
+    pred=exp(xmatrix %*% beta);
+    rho=0;
+    like=(y<cut)*((y==0)*log((rho+(1-rho)*exp(-pred)))+(y>0)*log((1-rho)*dpois(y,pred)))+
+        (y>=cut)*log((1-rho)*ppois(cut-1,pred,lower.tail = F))
+    llike = sum(like)
+    return(llike);
+}
+
+
+wald_lr<-function(y, x=NULL,cut=15){
+    test<-NULL;
+    n<-length(y);
+    if (is.null(x)){
+        a <- glm(y~1,family="poisson")
+        zz0<-optim(coef(a), likelihoodp,hessian=T,y=y,cut=cut,control=list(fnscale=-1));  # 此处优化函数method需要重新考虑，warning
+        zz<-optim( c(0, zz0$par), loglikelihood,hessian=T,y=y,cut=cut,control=list(fnscale=-1));
+    }else {
+        a <- glm(y~x,family="poisson")
+        zz0<-optim(  coef(a), likelihoodp,hessian=T,  y=y,x=x,cut=cut,control=list(fnscale=-1));
+        zz<-optim( c(0, zz0$par), loglikelihood,hessian=T, y=y,x=x,cut=cut,control=list(fnscale=-1));
+    }
+    aa<-zz$par;
+    test$conv = zz$convergence;
+    test$wrhop = zz$par[1];
+    if(det(zz$hessian)!=0){
+        OI<-solve(-zz$hessian,tol = 1e-40);
+        se<-sqrt(diag(OI));
+        test$wald <- as.numeric(aa[1]/se[1]);
+        test$lr <- as.numeric(2*zz$value-2*zz0$value);
+    }
+    return(test);
+}
+
+
+score<- function(y,x=NULL,cut=15) {
+    n=length(y);
+    if (is.null(x)){
+        a <- glm(y~1,family="poisson")
+        ex <- optim(  coef(a), likelihoodp,hessian=T,   y=y,cut=cut,control=list(fnscale=-1));
+        cov=matrix(rep(1,n),ncol=1);
+    } else {
+        a <- glm(y~x,family="poisson")
+        ex <- optim(  coef(a), likelihoodp,hessian=T,  y=y,x=x,cut=cut,control=list(fnscale=-1));
+        cov=cbind(1,x);
+    }
+    
+    beta=coef(a);
+    p=length(beta);
+    mu= exp(cov %*% beta );
+    ci=ppois(cut,mu,lower.tail = F);
+    ri= (y==0);
+    pi=exp(-mu);
+    
+    dU=matrix(rep(0, n^2), nrow=n);
+    diag(dU)= (y<cut)*(-mu*ri+(1-ri)*(y-mu))+(y>=cut)*mu*dpois(cut-1,mu)/ci
+
+    uWT1=t(cov)%*%dU;
+    uWT2=-1+ri*(y<cut)/pi;
+    
+    L11=uWT1%*%t(uWT1);
+    L12=uWT1%*%(uWT2)
+    L21=t(L12)
+    L22=t(uWT2)%*%(uWT2)
+    LL=rbind(cbind(L11,L12),cbind(L21,L22));
+    
+    score<-sum(-1+ri*(y<cut)/pi)*sqrt(solve(LL)[p+1,p+1]); 
+    return(score);
+}
+
+snew<- function(y,status,x=NULL,cut=15) {
+    n=length(y);
+    if (is.null(x)){
+        a <- glm(y~1,family="poisson")
+        ex <- optim(  coef(a), likelihoodp,hessian=T,   y=y,cut=cut,control=list(fnscale=-1));
+        cov=matrix(rep(1,n),ncol=1);
+    } else {
+        a <- glm(y~x,family="poisson")
+        ex <- optim(  coef(a), likelihoodp,hessian=T,  y=y,x=x,cut=cut,control=list(fnscale=-1));
+        cov=cbind(1,x);
+    }
+    beta=coef(a);
+    p=length(beta);
+    mu= exp(cov %*% beta );
+    ci=ppois(cut,mu,lower.tail = F);
+    ri= (y==0);
+    pi=exp(-mu);
+    
+    dU=matrix(rep(0, n^2), nrow=n);
+    diag(dU)=(y<cut)*(y-mu)+(y>=cut)*mu*dpois(cut-1,mu)/ci;
+    uWT1=ri-pi;
+    uWT2=t(cov)%*%dU;
+    
+    A11=-n;
+    A12=t(uWT1)%*%t(uWT2);
+    A21=matrix(rep(0,p),ncol=1);
+    A22=uWT2%*%t(uWT2);
+    AA=rbind(cbind(A11,-A12),cbind(A21,-A22));
+    A=AA/n;
+    
+    B11=t(uWT1)%*%uWT1;
+    B12=t(uWT1)%*%t(uWT2);
+    B22=uWT2%*%t(uWT2);
+    B21=t(B12);
+    BB=rbind(cbind(B11,B12),cbind(B21,B22));
+    B=BB/n;
+    
+    TT=solve(A)%*%B%*%t(solve(A));
+    
+    snew<-(sqrt(n)*mean(ri-pi))/sqrt((TT)[1,1]); 
+    return(snew);
+    
+}
+
+# 下面是测试代码
+# x = runif(200);yy = rzipois(200,exp(0.5-x), pstr0 = 0.5)
+# cut=4
+# y = pmin(cut, yy)
+# wald_lr(y,x=x,cut=cut)

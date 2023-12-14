@@ -1,0 +1,197 @@
+
+## 下面的函数用于绘制统计量的直方图
+type1error_hist_par_func <- function(statistic,mu=NULL,alpha=NULL,ns=ns,statname=""){
+    
+    if(is.null(mu)){mu_alpha=alpha;
+    }else {mu_alpha=mu;}
+    
+    coln = length(mu_alpha)
+    rown = length(ns)
+    op <- par(mfrow = c(rown,coln),
+              oma = c(7,4,2,0) + 0.1,
+              mar = c(0,0,1,1) + 0.1, cex.lab=1.3) 
+    ## 第一行
+    kk=1
+    for (k in 1:coln){ 
+        txt = ifelse(is.null(mu),as.expression(substitute(alpha == x,list(x=aa[k]))),as.expression(substitute(mu == x,list(x=mu[k]))))
+        if(k==1){ hist(statistic[ ,kk,k],xlab="", ylab="",prob=TRUE,main = txt);
+            lines(density(statistic[ ,kk,k],na.rm = T))}
+        else{hist(statistic[ ,kk,k],xlab="", ylab="",prob=TRUE,main = txt);
+            lines(density(statistic[ ,kk,k],na.rm = T))}
+        legend("bottomright", paste("n = ", ns[kk]),bty="n")
+    }
+    ## 第二 至 倒数第二行
+    for( kk in 2:(rown-1)){
+        for (k in 1:coln){
+        if(k==1){hist(statistic[ ,kk,k],xlab="", ylab="",prob=TRUE,main = "");
+            lines(density(statistic[ ,kk,k],na.rm = T))}
+        else{hist(statistic[ ,kk,k],xlab="", ylab="",prob=TRUE,main = "");
+            lines(density(statistic[ ,kk,k],na.rm = T))}
+        legend("bottomright", paste("n = ", ns[kk]),bty="n")
+        }
+    }
+    ## 最后一行
+    kk=rown
+    for (k in 1:coln)  
+    {
+        if(k==1){hist(statistic[ ,kk,k],xlab="", ylab="",prob=TRUE,main = "");
+            lines(density(statistic[ ,kk,k],na.rm = T))}
+        else{hist(statistic[ ,kk,k],xlab="",ylab="",prob=TRUE,main = "");
+            lines(density(statistic[ ,kk,k],na.rm = T))}
+        legend("bottomright", paste("n = ", ns[kk]),bty="n")
+    }
+
+    title(xlab = paste("histogram of ",statname," Test Statistic"),
+          ylab = "Sample Number", outer = TRUE, line = 2.7,cex.lab=1.5)
+    par(xpd=NA)
+    par(op);
+}
+
+
+
+## 下面的函数用于绘制power的图
+power_plot_par_func <- function(lp,ps,pw,pl,pn,mu=NULL,alpha=NULL,ns=ns,legend_x=-0.8,legend_y=-0.58){
+    
+    if(is.null(mu)){mu_alpha=alpha;
+    }else {mu_alpha=mu;}
+    
+    coln = length(mu_alpha)
+    rown = length(ns)
+    op <- par(mfrow = c(rown,coln),
+              oma = c(7,4,2,0) + 0.1,
+              mar = c(0,0,1,1) + 0.1, cex.lab=1.3) 
+    
+    ## 第一行
+    kk=1
+    for (k in 1:coln){ 
+        txt = ifelse(is.null(mu),as.expression(substitute(alpha == x,list(x=aa[k]))),as.expression(substitute(mu == x,list(x=mu[k]))))
+        if(k==1){ 
+            plot(lp,ps[kk, ,k] ,type="l", col="black", xaxt='n',xlab="", ylab="", ylim=c(0,1),main = txt)} 
+        else{   
+            plot(lp,ps[kk, ,k] ,type="l",xaxt='n',yaxt='n',xlab="", ylab="", ylim=c(0,1),main = txt)} 
+        lines(lp,pw[kk, ,k],lty=3,col="red")
+        lines(lp,pl[kk, ,k],lty=5, col="blue") 
+        lines(lp,pn[kk, ,k],lty=4, col="cyan") 
+        text( 0.25, .03, paste("n = ", ns[kk]));
+    }
+    ## 第二 至 倒数第二行
+    for( kk in 2:(rown-1)){
+        for (k in 1:coln){
+            if(k==1){
+                plot(lp,ps[kk, ,k] ,type="l", col="black",xlab="", xaxt='n',ylab="", ylim=c(0,1))
+            }else{
+                plot(lp,ps[kk, ,k] ,type="l",xlab="", xaxt='n',yaxt='n',ylab="", ylim=c(0,1))}
+            lines(lp,pn[kk, ,k],lty=4, col="cyan") 
+            lines(lp,pw[kk, ,k],lty=3,col="red")
+            lines(lp,pl[kk, ,k],lty=5, col="blue") 
+            text( 0.25, .03, paste("n = ", ns[kk]))}
+    }
+    ## 最后一行
+    kk=rown
+    for (k in 1:coln)  
+    {
+        if(k==1){plot(lp,ps[kk, ,k] ,type="l", col="black",xlab="" ,ylab="", ylim=c(0,1))
+        }else{plot(lp,ps[kk, ,k] ,type="l",yaxt='n',xlab="" ,ylab="", ylim=c(0,1))
+        }
+        lines(lp,pn[kk, ,k],lty=4, col="cyan")
+        lines(lp,pw[kk, ,k],lty=3,col="red")
+        lines(lp,pl[kk, ,k],lty=5, col="blue") 
+        text( 0.24, .03,  paste("n = ", ns[kk]));
+    }
+    
+    title(xlab = "Probabilities of Structural Zeros", 
+          ylab = "Power", outer = TRUE, line = 2.7,cex.lab=1.5)
+    par(xpd=NA)
+    legend(legend_x,legend_y,legend=c("Score Test","Wald Test","LR Test","He Test"),
+           lty = c(1,3,5,4), col=c("black","red","blue","cyan"),  horiz = T)
+    
+    par(op);
+}
+
+
+
+## 下面的函数用于绘制Type1Error的图
+type1error_plot_par_func <- function(ps,pw,pl,pn,mu=NULL,alpha=NULL,ns=ns,legend_x=-0.8,legend_y=-0.58){
+    
+    if(is.null(mu)){mu_alpha=alpha;
+    }else {mu_alpha=mu;}
+    
+    coln = length(mu_alpha)
+    rown = length(ns)
+    op <- par(mfrow = c(rown,coln),
+              oma = c(7,4,2,0) + 0.1,
+              mar = c(0,0,1,1) + 0.1, cex.lab=1.3) 
+    
+    ## 1st row
+    #######################
+    kk=1
+    for (k in 1:length(mu_alpha)){ 
+        txt = ifelse(is.null(mu),as.expression(substitute(alpha == x,list(x=aa[k]))),as.expression(substitute(mu == x,list(x=mu[k]))))
+        if(k==1){  
+            plot(((1:length(sort(ps[,kk,k])))-.5)/length(sort(ps[,kk,k])),sort(ps[,kk,k]) ,type="l", col="black", xaxt='n',xlab="", ylab="", ylim=c(0,1),main = txt)} 
+        else{   
+            plot(((1:length(sort(ps[,kk,k])))-.5)/length(sort(ps[,kk,k])),sort(ps[,kk,k]) ,type="l",xaxt='n',yaxt='n',xlab="", ylab="", ylim=c(0,1),main = txt)}  
+        lines(((1:length(sort(pn[,kk,k])))-.5)/length(sort(pn[,kk,k])),sort(pn[,kk,k]),lty=4, col="cyan")   
+        lines(((1:length(sort(pw[,kk,k])))-.5)/length(sort(pw[,kk,k])),sort(pw[,kk,k]),lty=4, col="red")   
+        lines(((1:length(sort(pl[,kk,k])))-.5)/length(sort(pl[,kk,k])),sort(pl[,kk,k]),lty=4, col="blue")  
+        text( 0.25, .03, paste("n = ", ns[kk]));
+    }
+    ## 2-3th row
+    #######################
+    for( kk in 2:(length(ns)-1))
+        for (k in 1:length(mu_alpha))
+        {if(k==1){
+            plot(((1:length(sort(ps[,kk,k])))-.5)/length(sort(ps[,kk,k])),sort(ps[,kk,k]) ,type="l", col="black",xlab="", xaxt='n',ylab="", ylim=c(0,1))
+        }else{plot(((1:length(sort(ps[,kk,k])))-.5)/length(sort(ps[,kk,k])),sort(ps[,kk,k]) ,type="l",xlab="", xaxt='n',yaxt='n',ylab="", ylim=c(0,1))}
+            lines(((1:length(sort(pn[,kk,k])))-.5)/length(sort(pn[,kk,k])),sort(pn[,kk,k]),lty=4, col="cyan") 
+            lines(((1:length(sort(pw[,kk,k])))-.5)/length(sort(pw[,kk,k])),sort(pw[,kk,k]),lty=4, col="red")   
+            lines(((1:length(sort(pl[,kk,k])))-.5)/length(sort(pl[,kk,k])),sort(pl[,kk,k]),lty=4, col="blue") 
+            text( 0.25, .03, paste("n = ", ns[kk]));
+        }
+    ## 4th row
+    #######################
+    kk=length(ns)
+    for (k in 1:length(mu_alpha))  
+    {
+        if(k==1){plot(((1:length(sort(ps[,kk,k])))-.5)/length(sort(ps[,kk,k])),sort(ps[,kk,k]) ,type="l", col="black",xlab="" ,ylab="", ylim=c(0,1))
+        }else{plot(((1:length(sort(ps[,kk,k])))-.5)/length(sort(ps[,kk,k])),sort(ps[,kk,k]) ,type="l",yaxt='n',xlab="" ,ylab="", ylim=c(0,1))
+        }
+        lines(((1:length(sort(pn[,kk,k])))-.5)/length(sort(pn[,kk,k])),sort(pn[,kk,k]),lty=4, col="cyan")
+        lines(((1:length(sort(pw[,kk,k])))-.5)/length(sort(pw[,kk,k])),sort(pw[,kk,k]),lty=4, col="red")   
+        lines(((1:length(sort(pl[,kk,k])))-.5)/length(sort(pl[,kk,k])),sort(pl[,kk,k]),lty=4, col="blue") 
+        text( 0.24, .03,  paste("n = ", ns[kk]));
+    }
+
+    title(xlab = "Empirical p-values", ylab = "Theoretical p-value", outer = TRUE, line = 2.7,cex.lab=1.5)
+    par(xpd=NA)
+    # legend(-3.1,-.58,legend=c("50","100","200","500", "1000"), lty = c(2,3,4,5,1),horiz = TRUE)
+    legend(legend_x,legend_y,legend=c("Score Test","Wald Test","LR Test","Snew Test"),
+           lty = c(1,3,5,4), col=c("black","red","blue","cyan"),  horiz = T)
+    
+    par(op)
+    
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,2 @@
+select * from "DMCX"."SS_RESULT_DATA" where INDEX_NAME = '审核备项目-大行业$文化、体育和娱乐业$自有投资 ' order by YEAR_MONTH;
+-- 

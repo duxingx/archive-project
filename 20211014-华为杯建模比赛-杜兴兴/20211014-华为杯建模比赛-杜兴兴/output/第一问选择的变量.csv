@@ -1,0 +1,21 @@
+,Descriptor Java Class,Descriptor,Description,Class
+39,BCUTDescriptor,BCUTc-1l,nhigh lowest partial charge weighted BCUTS ,2D
+42,BCUTDescriptor,BCUTp-1h,nlow highest polarizability weighted BCUTS ,2D
+56,CarbonTypesDescriptor,C1SP2,Doubly hound carbon bound to one other carbon ,2D
+70,ChiChainDescriptor,VCH-5,"Valence chain, order 5",2D
+237,ElectrotopologicalStateAtomTypeDescriptor,SHBint10,Sum of E-State descriptors of strength for potential Hydrogen Bonds of path length 10,2D
+238,ElectrotopologicalStateAtomTypeDescriptor,SHsOH,Sum of atom-type H E-State: -OH,2D
+291,ElectrotopologicalStateAtomTypeDescriptor,SsOH,Sum of atom-type E-State: -OH,2D
+357,ElectrotopologicalStateAtomTypeDescriptor,minHsOH,Minimum atom-type H E-State: -OH,2D
+406,ElectrotopologicalStateAtomTypeDescriptor,minsssN,Minimum atom-type E-State: >N-,2D
+410,ElectrotopologicalStateAtomTypeDescriptor,minsOH,Minimum atom-type E-State: -OH,2D
+411,ElectrotopologicalStateAtomTypeDescriptor,mindO,Minimum atom-type E-State: =O,2D
+470,ElectrotopologicalStateAtomTypeDescriptor,maxHBint5,Maximum E-State descriptors of strength for potential Hydrogen Bonds of path length 5,2D
+476,ElectrotopologicalStateAtomTypeDescriptor,maxHsOH,Maximum atom-type H E-State: -OH,2D
+531,ElectrotopologicalStateAtomTypeDescriptor,maxssO,Maximum atom-type E-State: -O-,2D
+585,ElectrotopologicalStateAtomTypeDescriptor,hmin,Minimum H E-State,2D
+587,ElectrotopologicalStateAtomTypeDescriptor,LipoaffinityIndex,Lipoaffinity index,2D
+639,PaDELHBondAcceptorCountDescriptor,nHBAcc,Number of hydrogen bond acceptors (using CDK HBondAcceptorCountDescriptor algorithm),2D
+659,MDEDescriptor,MDEC-23,Molecular distance edge between all secondary and tertiary carbons,2D
+665,MDEDescriptor,MDEO-12,Molecular distance edge between all primary and secondary oxygens ,2D
+673,MLFERDescriptor,MLFER_A,Overall or summation solute hydrogen bond acidity,2D

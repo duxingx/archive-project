@@ -1,0 +1,2 @@
+"0","deg <- degree(g)"
+"0","hist(deg,xlab = ""度"",ylab = ""频数"",main="""",col = ""white"")"

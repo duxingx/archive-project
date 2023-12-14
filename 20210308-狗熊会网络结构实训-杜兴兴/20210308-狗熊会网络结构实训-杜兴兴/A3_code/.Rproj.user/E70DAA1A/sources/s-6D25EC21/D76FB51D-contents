@@ -1,0 +1,108 @@
+---
+title: "Task1"
+author: "duxingxing"
+date: "2021/3/8"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 准备工作
+```{r}
+rm(list=ls())
+# install.packages("igraph")
+library(igraph)
+```
+```{r}
+name1 = c("A","A","A","A","B","B","C","C","D")
+name2 = c("B","C","D","E","C","E","D","E","E")
+weight = c(1,1,3,4,1,3,2,2,1)
+data = data.frame(name1 = name1,name2 = name2,weight = weight)  #建立数据，其中第三列为权重
+network = graph_from_data_frame(
+  d=data,vertices=c("A","B","C","D","E"),
+  directed=F)
+deg=degree(network,mode="all")
+x = E(network)
+E(network)$width=x$weight #边的宽度由权重决定
+
+plot(network,
+     vertex.size=5*deg,      #点的度数越大，绘制的点越大
+     vertex.label.cex=.7,    #节点的标签字号
+     vertex.label.dist=.01,  #节点的标签的位置
+     layout=layout.circle,   #环形布局
+     edge.label = weight,    #标记边的权重
+     edge.label.cex = .8,    #标记边权的字号
+     edge.label.color = "black", #边权字体颜色
+     edge.color="gray50",    #边的颜色
+     sub = "图1.3 演员之间合作电影数量的加权网络")
+```
+
+## 例1.1
+
+### 创建邻接矩阵
+
+1. 固定随机种子，使得结果可重复
+2. 创建数据
+3. 将矩阵对称化
+4. 剔除节点指向自己的情形
+```{r cars}
+set.seed(1)
+data = matrix(sample(0:1,100,replace = TRUE,prob = c(0.5,0.5)),nrow = 10)
+data[lower.tri(data)] = t(data)[lower.tri(data)]
+for(i in 1:10){
+    data[i,i] = 0
+}
+data
+```
+
+### 创建网络
+
+```{r}
+network = graph_from_adjacency_matrix(data,mode="undirected",diag=F)
+plot(network,layout=layout.circle,sub="图1.1 编号为1-10的节点的同学的关系网络")
+```
+
+## 例1.2
+
+### 创建邻接矩阵
+
+```{r}
+set.seed(2)
+data = matrix(sample(0:1,36,replace = TRUE),nrow = 6)
+colnames(data) = rownames(data) = LETTERS[1:6]
+for(i in 1:6){
+    data[i,i] = 0
+}
+data
+```
+
+### 创建网络
+
+```{r}
+network = graph_from_adjacency_matrix(data)
+plot(network,vertex.label.cex=.7,vertex.label.dist=.01,sub="图1.2 六名学者引文关系的网络")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

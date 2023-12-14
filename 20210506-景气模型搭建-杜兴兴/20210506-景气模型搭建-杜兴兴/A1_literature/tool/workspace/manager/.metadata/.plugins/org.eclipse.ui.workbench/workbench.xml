@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workbench progressCount="1" version="2.0">
+<workbenchAdvisor/>
+<window height="1047" maximized="true" width="974" x="-7" y="0">
+<fastViewData fastViewLocation="1024"/>
+<perspectiveBar/>
+<coolbarLayout locked="0">
+<coolItem id="file" itemType="typeToolBarContribution" x="192" y="23"/>
+<coolItem id="edit" itemType="typeToolBarContribution" x="138" y="23"/>
+<coolItem id="home" itemType="typeToolBarContribution" x="38" y="23"/>
+<coolItem id="query" itemType="typeToolBarContribution" x="308" y="23"/>
+<coolItem id="debug" itemType="typeToolBarContribution" x="38" y="23"/>
+<coolItem id="group.editor" itemType="typeGroupMarker"/>
+<coolItem id="com.dameng.manager.editor.table_browse.TableBrowseEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
+<coolItem id="com.dameng.isql.editor.SqlEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
+</coolbarLayout>
+<page focus="true" label="&lt;Unknown Label&gt; - DM管理工具">
+<editors>
+<editorArea activeWorkbook="DefaultEditorWorkbook">
+<info part="DefaultEditorWorkbook">
+<folder appearance="1" expanded="2">
+<presentation id="com.dameng.manager.advisor.DmWorkbenchPresentationFactory">
+<part id="0"/>
+<part id="1"/>
+</presentation>
+</folder>
+</info>
+</editorArea>
+</editors>
+<views>
+<view id="com.dameng.manager.view.navigator.DatabaseNavigator" partName="对象导航">
+<viewState CommonNavigator.LINKING_ENABLED="0"/>
+</view>
+</views>
+<perspectives activePart="com.dameng.manager.editor.table_browse.TableBrowseEditor" activePerspective="com.dameng.manager.perspective.ManagerPerspective">
+<perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
+<descriptor class="com.dameng.manager.perspective.ManagerPerspective" id="com.dameng.manager.perspective.ManagerPerspective" label="DM管理工具"/>
+<hide_toolbar_item_id id="org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"/>
+<view id="com.dameng.manager.view.navigator.DatabaseNavigator"/>
+<fastViewBars/>
+<layout>
+<mainWindow>
+<info folder="true" part="topLeft">
+<folder activePageID="com.dameng.manager.view.navigator.DatabaseNavigator" appearance="2" expanded="2">
+<page content="com.dameng.manager.view.navigator.DatabaseNavigator" label="对象导航"/>
+<presentation id="com.dameng.manager.advisor.DmWorkbenchPresentationFactory">
+<part id="0"/>
+</presentation>
+</folder>
+</info>
+<info folder="true" part="stickyFolderRight" ratio="0.75" ratioLeft="750" ratioRight="250" relationship="2" relative="topLeft">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.help.ui.HelpView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.internal.introview" label="LabelNotFound"/>
+</folder>
+</info>
+<info part="org.eclipse.ui.editorss" ratio="0.18910424" ratioLeft="361" ratioRight="1548" relationship="2" relative="topLeft"/>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@1d0fae45" ratio="0.5" ratioLeft="350" ratioRight="350" relationship="2" relative="org.eclipse.ui.editorss">
+<folder appearance="2" expanded="2">
+<page content="com.dameng.isql.view.log.SqlLogView" label="LabelNotFound"/>
+<presentation id="com.dameng.manager.advisor.DmWorkbenchPresentationFactory"/>
+</folder>
+</info>
+<info part="org.eclipse.ui.views.ContentOutline" ratio="0.5" ratioLeft="350" ratioRight="350" relationship="2" relative="org.eclipse.ui.editorss"/>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@1cc20796" ratio="0.93098956" ratioLeft="1430" ratioRight="106" relationship="2" relative="org.eclipse.ui.editorss">
+<folder appearance="2" expanded="2">
+<page content="com.dameng.isql.view.function.FunctionView" label="LabelNotFound"/>
+<presentation id="com.dameng.manager.advisor.DmWorkbenchPresentationFactory"/>
+</folder>
+</info>
+</mainWindow>
+</layout>
+</perspective>
+</perspectives>
+<workingSets/>
+<navigationHistory/>
+</page>
+<workbenchWindowAdvisor/>
+<actionBarAdvisor/>
+<trimLayout>
+<trimArea IMemento.internal.id="16384">
+<trimItem IMemento.internal.id="topLeft"/>
+</trimArea>
+<trimArea IMemento.internal.id="128">
+<trimItem IMemento.internal.id="org.eclipse.ui.internal.WorkbenchWindow.topBar"/>
+</trimArea>
+<trimArea IMemento.internal.id="1024">
+<trimItem IMemento.internal.id="org.eclipse.jface.action.StatusLineManager"/>
+<trimItem IMemento.internal.id="org.eclipse.ui.internal.HeapStatus"/>
+</trimArea>
+</trimLayout>
+</window>
+<mruList/>
+</workbench>

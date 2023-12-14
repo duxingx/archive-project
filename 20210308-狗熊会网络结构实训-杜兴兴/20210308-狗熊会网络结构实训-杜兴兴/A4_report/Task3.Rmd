@@ -1,0 +1,58 @@
+---
+title: "在线课程-网络结构数据Task3"
+author: "杜兴兴"
+date: "2021/3/14"
+output: html_document
+---
+
+## 准备工作
+
+```{r}
+# 清除工作环境
+rm(list = ls())
+library(igraph)  # 加载必要包
+```
+
+
+## 作业一：生成邻接矩阵
+```{r}
+data <- read.csv("../A2_data/football.csv",header = T) # 导入数据
+graph1 = graph_from_data_frame(data,directed = F) # 根据边数据构造有向图
+# plot(graph1)
+adj <- as_adjacency_matrix(graph1,edges = F,names = F,sparse = F) # 将网络图转换为邻接矩阵
+print(adj[1:10,1:10])  # 打印显示前10*10的邻接矩阵
+```
+## 作业二：对结果进行适当解读
+
+- 邻接矩阵的对角线全为0，说明没有自己与自己对战的情况，与实际情况相符合。
+- 邻接矩阵是一个对称阵，表明两个球队之间的对战是相互的。
+- 邻接矩阵的数值为0或1，表明两个球队之间只存在是否对战，邻接矩阵并没有对对战强度进行说明。 
+
+## 选作：对TASK2中构建的权游网络生成邻接矩阵，并做适当解读。
+
+```{r}
+data <- read.csv(file="../A2_data/game of thrones/got-edges.csv",header = T)
+set.seed(123456) 
+
+graph2 <- graph_from_data_frame(data,directed = F)  # 创建网络
+E(graph2)$weight <- data$Weight # 给边赋值权重
+adj2 <- as_adjacency_matrix(graph2,attr = "weight",edges = F,names = T,sparse = F)  # 创建邻接矩阵
+print(adj2[1:10,1:10])  # 打印邻接矩阵的部分切片
+
+```
+
+- 邻接矩阵是一个对称阵，表明两个人物之间的关系是相互的。
+- 邻接矩阵中的数值表示权重，不同的人物之间的关系强度不同。
+- 邻接矩阵对角线元素全为0，表明人物自身不能存在相互关系，与实际情况相符合。
+
+
+
+
+
+
+
+
+
+
+
+

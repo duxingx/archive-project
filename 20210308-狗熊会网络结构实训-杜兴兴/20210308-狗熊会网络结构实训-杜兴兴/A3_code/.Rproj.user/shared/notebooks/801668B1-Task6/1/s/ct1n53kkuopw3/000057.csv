@@ -1,0 +1,6 @@
+"0","# 绘制箱线图"
+"0","op <- par(no.readonly = F,mar = c(4,4,2,2) )"
+"0","par(mfrow=c(2,4))"
+"0","for(i in c(2:8)){"
+"0","        boxplot(data[,i]~churn, data=data,ylab = names(data)[i])"
+"0","}"

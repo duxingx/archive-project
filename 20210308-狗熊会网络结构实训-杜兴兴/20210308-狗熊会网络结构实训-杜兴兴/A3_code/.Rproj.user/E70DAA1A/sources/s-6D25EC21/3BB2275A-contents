@@ -1,0 +1,94 @@
+---
+title: "数据分析报告"
+author: "杜兴兴"
+date: "2021/4/1"
+output: html_documentsh 
+---
+
+# 
+
+## 背景介绍（研究问题，研究意义）
+
+- 定义研究问题（选题）
+
+- 阐述选题的重要性
+  - 介绍行业背景
+  - 详述业务问题
+- 由点到面，层层深入
+
+# 数据描述（数据来源，网络边的大小、点和 边的含义）
+
+- 说明数据来源、样本量、每条数据含义
+- 该数据集由加州大学欧文分校社交网络上发送的个人消息组成。用户可以在网络上搜索其他人，然后根据个人信息发起对话。
+- 本报告所用的数据都来自公开数据库（http://snap.stanford.edu/data/CollegeMsg.html），一共1899个节点，59835条边，时间跨度为193天。
+- 一个节点表示一个用户，一条边（u,v,t）意味着用户u在某时刻t向v发送了一条私人消息。
+- 数据表中用SRC表示：用户节点的id；TGT表示：用户发消息的目标id；UNIXTS表示：发送消息的时间戳。
+- 数据说明表
+
+## 描述性分析（网络的基本描述、社区发现）
+
+- 因变量：业务问题
+- 自变量：分组介绍、图文并茂
+- 简单的小结
+
+## 统计建模
+
+## 结论与建议
+
+- 总结报告结论
+- 指出数据和方法的不足
+- 未来可行的分析方向
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r message=FALSE, warning=FALSE}
+# 清除工作环境
+rm(list = ls())
+# 加载必要包
+library(igraph)  
+library(dplyr)
+library(plyr)
+library(ggplot2)
+```
+
+
+
+```{r}
+data = read.table("../A2_data/final/CollegeMsg.txt",col.names = c("SRC","DST","UNIXTS") ) 
+# head(data)
+g <- graph_from_data_frame(data,directed = F)
+print(paste("网络的节点数为：",length(V(g))))
+print(paste("网络的边数为：",length(E(g))))
+print(paste("网络的密度为：",graph.density(g)))
+```
+
+
+
+```{r}
+g <- graph_from_data_frame(data,directed = F)
+print(paste("网络的节点数为：",length(V(g))))
+while (any(degree(g) <10)) {
+        g = delete.vertices(g,V(g)[degree(g)<10])
+}
+print(paste("删除之后网络的节点数为：",length(V(g))))
+print(paste("删除之后网络的所有节点数都大于10吗：",all(degree(g)>=10)))
+
+
+```
+
+
+
+> Pietro Panzarasa, Tore Opsahl, and Kathleen M. Carley. "Patterns and dynamics of users' behavior and interaction: Network analysis of an online community." Journal of the American Society for Information Science and Technology 60.5 (2009): 911-932.
+
+
+
+
+
+
+
+
+

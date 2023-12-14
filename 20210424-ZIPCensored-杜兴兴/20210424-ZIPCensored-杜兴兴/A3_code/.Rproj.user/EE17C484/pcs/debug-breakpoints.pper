@@ -1,0 +1,21 @@
+{
+    "debugBreakpointsState": {
+        "breakpoints": [
+            {
+                "id": 0,
+                "path": "D:/R learning/A1_he_test/D4_ZIPCensoredModel/A3_code/czip_data_functions.R",
+                "line_number": 15,
+                "function_steps": "",
+                "function_name": "power_data_func",
+                "state": 2,
+                "editor_state": 2,
+                "editor_line_number": 15,
+                "is_pending_debug_completion": false,
+                "needs_updated_steps": false,
+                "type": 0,
+                "is_package_breakpoint": false,
+                "package_name": ""
+            }
+        ]
+    }
+}

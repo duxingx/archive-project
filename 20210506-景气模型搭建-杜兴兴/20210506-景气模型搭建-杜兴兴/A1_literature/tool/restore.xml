@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<restores>
+<restore>
+	<backupPath></backupPath> <!--备份文件路径 ,必需参数 -->
+  <deaultBackupDir></deaultBackupDir><!--默认备份目录-->
+  <searchDir></searchDir><!--备份搜索目录(可以多个)-->
+  <dataFilePath src="" dest=""></dataFilePath><!-- 数据文件路径:src为源文件路径，dest为恢复后文件路径-->
+  <restoreToTime></restoreToTime><!--还原时间-->
+  <archDir></archDir><!--归档目录(可以为多个)-->
+  <password></password><!--还原密码-->
+  <parallelPath></parallelPath><!--并行目录-->
+</restore>
+</restores>

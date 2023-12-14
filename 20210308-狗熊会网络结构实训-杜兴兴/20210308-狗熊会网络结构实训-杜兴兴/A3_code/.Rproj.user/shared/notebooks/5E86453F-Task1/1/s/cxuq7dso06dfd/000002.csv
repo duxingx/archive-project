@@ -1,0 +1,2 @@
+"0","network = graph_from_adjacency_matrix(data,mode=""undirected"",diag=F)"
+"0","plot(network,layout=layout.circle,sub=""图1.1 编号为1-10的节点的同学的关系网络"")"

@@ -1,0 +1,54 @@
+---
+title: "在线课程-网络数据结构Task5"
+author: "杜兴兴"
+date: "2021/3/18"
+output: html_document
+---
+
+
+## 准备工作
+
+```{r message=F}
+# 清除工作环境
+rm(list = ls())
+library(igraph)  # 加载必要包
+```
+
+## 绘制度分布的直方图，并且做简要解读
+```{r}
+edge = read.csv("../A2_data/edge.csv",header = T)
+
+g = graph_from_data_frame(edge,directed = F)  # 构建网络
+dg = degree(g,mode = "all")  # 计算节点度
+hist(dg,main = "度分布的直方图",xlab = "度",ylab = "频数")  # 绘制度分布的直方图
+```
+
+
+通过观察上面直方图可以发现，节点的分布基本呈现右偏，大部分节点的度都在0-100范围内，节点度大于100的只有极少数。
+
+## 计算度中心性指标
+```{r message=F}
+sort_value <- function(x){  # 自定义排序函数
+    index = order(x,decreasing = T)[1:10]
+    return(list(index = index,
+                value = x[index]))
+}
+sort_value(degree(g,mode = "all",normalized = T))
+
+sort_value(closeness(g,mode = "all",normalized = T))
+
+```
+
+- 根据度中心性度量指标，标号为167、171、137、797、168、596、501、127、 154和611的节点比较重要，说明这些结点所代表的作者与所有其他作者的相联系的程度较高，在网络中的参会度高。
+- 根据接近中兴性度量指标，标号为596、611、154、524、797、127、117、4、137、502的节点比较重要，说明这些节点所代表的作者与其它作业的“相近”程度最高。
+
+## 作者简要介绍：
+stehlik,milan 的研究着重于多文化选择的发展，尤其是癌症治疗，金融以及生态系统的发展。主要从事神经计算与应用研究。包括：医学统计、生态统计学、代数统计学、优化设计、极值理论、波动率模型、随机近似等方面。
+
+- [1] Milan Stehlík & Rastislav Potocký & Helmut Waldl & Zdeněk Fabián, 2010. "On the favorable estimation for fitting heavy tailed data," Computational Statistics, Springer, vol. 25(3), pages 485-503, September.
+
+- [2] Milan Stehlík & Juan Rodríguez-Díaz & Werner Müller & Jesús López-Fidalgo, 2008. "Optimal allocation of bioassays in the case of parametrized covariance functions: an application to Lung’s retention of radioactive particles," TEST: An Official Journal of the Spanish Society of Statistics and Operations Research, Springer;Sociedad de Estadística e Investigación Operativa, vol. 17(1), pages 56-68, May.
+
+- [3] Kiselák, Jozef & Stehlík, Milan, 2008. "Equidistant and D-optimal designs for parameters of Ornstein-Uhlenbeck process," Statistics & Probability Letters, Elsevier, vol. 78(12), pages 1388-1396, September.
+
+- [4] Stehlík, Milan, 2006. "Exact likelihood ratio scale and homogeneity testing of some loss processes," Statistics & Probability Letters, Elsevier, vol. 76(1), pages 19-26, January.

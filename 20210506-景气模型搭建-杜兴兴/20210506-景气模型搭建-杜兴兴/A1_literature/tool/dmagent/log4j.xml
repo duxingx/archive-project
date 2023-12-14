@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %n[%p] %m%n"/>
+		</layout>
+	</appender>
+
+	<appender name="FILE" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="${dm_agent.home}/log/dmagent.log"/>
+		<param name="Append" value="true"/>
+		<param name="DatePattern" value="'.'yyyy-MM-dd"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %n[%p] %m%n"/>
+        </layout>
+    </appender>
+
+	<appender name="ASYNC_OUT" class="org.apache.log4j.AsyncAppender">
+		<param name="BufferSize" value="512"/>
+		<appender-ref ref="FILE"/>
+		<appender-ref ref="CONSOLE"/>
+	</appender>
+
+	<root>
+		<level value="ERROR"/>
+		<appender-ref ref="CONSOLE"/>
+		<appender-ref ref="FILE"/>
+	</root>
+</log4j:configuration>

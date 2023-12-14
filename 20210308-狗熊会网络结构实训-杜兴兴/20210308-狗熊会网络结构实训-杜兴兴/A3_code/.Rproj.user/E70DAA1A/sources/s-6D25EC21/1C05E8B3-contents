@@ -1,0 +1,165 @@
+---
+title: "在线课程-网络数据结构Task6"
+author: "杜兴兴"
+date: "2021/3/23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## 准备工作
+
+```{r message=FALSE, warning=FALSE}
+# 清除工作环境
+rm(list = ls())
+library(igraph)  # 加载必要包
+```
+
+## 任务一
+根据定义计算个体的度degree，并且将其按degree倒序排列。请你给这段代码加上注释，重点是学习ddply这个函数。
+```{r message=FALSE, warning=FALSE}
+# install.packages("plyr")
+library(plyr)
+
+data = read.csv("../A2_data/dat.csv",stringsAsFactors = F) # 导入数据，字符变量不作为因子变量读入
+
+degree = ddply(data,.(id),nrow)                            # 对id变量进行分组统计
+
+colnames(degree) = c('id', 'degree')                       # 变量重命名
+
+degree = degree[order(degree$degree,decreasing = T),]      # 按照degree变量降序排列
+
+head(degree)                                               # 查看前6个数据
+```
+
+## 任务二
+根据定义计算个体的联系强度，并且与degree合并。结果请按id排序。给这段代码加上注释，重点学习ddply函数和merge函数。
+```{r}
+comm_sum_time = ddply(data, .(id), function(x){                   # 按照id进行分组统计
+    # 统计的方式根据自定义函数（对每个id的comm_time求和）
+    sum(x$comm_time)                                                
+})
+
+colnames(comm_sum_time) = c('id', 'comm_sum_time')                # 变量重命名
+
+tmp_data = merge(degree, comm_sum_time, by = 'id')      # 根据id变量对两个数据集横向全连接
+
+tmp_data$comm_index = tmp_data$comm_sum_time / tmp_data$degree   # 计算个体的联系强度
+
+tmp_data = tmp_data[order(tmp_data$id), ]               # 按照id变量升序排列 
+
+head(tmp_data[, c('id', 'comm_index')])                 # 查看id,comm_index变量的前6行
+```
+
+## 任务三
+根据定义计算个体信息熵，结果请按信息熵倒序排列。给这段代码添加注释，确保你理解了代码的含义。
+```{r}
+tmp_data2 = merge(data, tmp_data[, c('id', 'comm_sum_time')]) # 默认按照共同变量(id)进行全连接
+
+tmp_data2$p = tmp_data2$comm_time / tmp_data2$comm_sum_time  # i与j的童话时长所占比例
+
+E = ddply(tmp_data2, .(id), function(x){                     # 按照id变量分组统计信息熵
+    # 计算信息熵的公式
+  -sum(x$p * log(x$p))
+})
+
+colnames(E) = c('id', 'entropy')                             # 对变量重命名
+
+E = E[order(E$entropy, decreasing = T), ]                    # 按照信息熵倒序排列 
+
+head(E)                                                      # 查看前6行
+```
+
+## 任务四
+任选一个自变量绘制与因变量的分组箱线图。这里以当月花费为例，你可以选择其他变量来做展示。请给出一定的解读。
+```{r}
+data <- read.csv('../A2_data/train.csv')
+data$churn <- factor(data$churn, levels = c(0,1),labels = c('非流失','已流失'))
+summary(data)
+```
+```{r}
+# 绘制箱线图
+op <- par(no.readonly = F,mar = c(4,4,2,2) )
+par(mfrow=c(2,4))
+for(i in c(2:8)){
+        boxplot(data[,i]~churn, data=data,ylab = names(data)[i])
+}
+```
+
+如上绘制了7个自变量与因变量的分组箱线图。由图可以看出，已流失客户的在网时长整体低于非流失客户；同时流失组的平均当月花费相对较少。关于社交网络相关的变量，流失组的平均个体的度相对较小；另外留守组的平均联系强度相对较弱，但差异很小；流失组的平均信息熵相对较小，说明流失组的信息分布越集中，客户流失的可能更高一些。最后两个子图描绘的是变化率的差异，平均来看两组在花费的变化尚无明显差别；而流失组的个体度变化平均来说为负数，说明通话的人数在减少。
+
+## 任务五
+构建客户流失模型（逻辑回归模型）并给出系数的解读。此处已经给出了解读的示例，你可以挑选1-2个变量，解读现象背后的原因。尤其是能够体现网络结构的自变量，其对流失的影响能带来什么启发？
+```{r}
+model0 <- glm(churn~tenure+expense+degree+tightness+entropy+chgdegree+chgexpense,
+    family = binomial(link = 'logit'),
+    data = data)
+summary(model0)
+```
+
+根据如上的模型结果可以看出，个体信息熵通过了显著性检验，且个体信息熵的估计系数为负数，说明个体信息熵越大，说明通话分布的越均匀，此时流失概率越低。而个体信息熵体现的是通话时长的离散程度，简而言之，熵越大，离散程度越大，也即根不同的人打电话时长都比较平均。模型结果说明未流失客户的通话时长的分布要高于流失客户，未流失客户通话时长的离散程度更大。
+
+## 任务六
+
+绘制人群细分柱状图；
+
+根据模型给出每个样本的预测流失概率值，按照预测值从高到低对样本进行排序，例如只覆盖前10%的样本，计算对应的真实流失的样本数占所有流失样本数的比例，记为捕获率，以此类推，覆盖不同比例的样本，就可以计算不同的覆盖率对应的捕获率，从而得到覆盖率捕获率曲线。
+```{r}
+#按预测概率排序后的id
+id_pre <- data$ID[order(model0$fitted.values, decreasing = T)]
+#真实流失的客户id
+id_loss <- data$ID[data$churn=='已流失']
+#计算捕获率向量
+buhuo <- ifelse(id_pre%in%id_loss,1,0)
+capture_rate <- cumsum(buhuo)/sum(data$churn=='已流失')
+#计算覆盖率向量
+cover_rate <- 1:length(capture_rate)/length(capture_rate)
+plot(cover_rate, capture_rate,type='l',xlab='覆盖率',ylab='捕获率')
+abline(v=0.2, col='red')
+```
+
+```{r}
+#读入测试集
+test <- read.csv('../A2_data/test.csv')
+#预测概率
+pre <- predict(model0, test,type='response')
+#将概率预测值与实际流失情况放在一个数据框d中
+d <- data.frame(pre = pre, true = test$churn)
+#按预测概率从高到低排序
+d <- d[order(d$pre), ]
+
+#进行等宽分组，分为5组，记录在d中
+# install.packages("infotheo")
+library(infotheo)
+s <- discretize(d$pre, 'equalfreq', 5)
+d <- cbind(d,s)
+d$X <- factor(d$X, levels = c(5:1), 
+              labels = c('高风险','偏高','中等','偏低','低风险'))
+
+#分组计算实际流失率
+library(plyr)
+t <- ddply(d, .(X), summarize, lossrate = mean(true))
+
+#绘制条形图，横轴为组，纵轴为实际流失率
+b <- barplot(t$lossrate, col = rainbow(5, alpha = 0.5),
+        names.arg = c('高风险','偏高','中等','偏低','低风险'),
+        xlab = '人群风险等级', ylab = '实际流失率')
+labels <- paste0(round(t$lossrate,3)*100,'%')
+text(1:5*1.2-0.5, t$lossrate-0.001, labels)
+#计算整体流失率，添加平均线
+abline(h=mean(test$churn), col = 'red', lty = 2)
+text(5 ,mean(test$churn)+0.002,paste0('平均流失率 = ', as.character(round(mean(test$churn),3)*100), '%'))
+```
+
+
+
+
+
+
+
+
+
+

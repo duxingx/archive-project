@@ -1,0 +1,2 @@
+"0","#计算整体流失率，添加平均线"
+"0","abline(h=mean(test$churn), col = 'red', lty = 2)"

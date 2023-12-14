@@ -1,0 +1,140 @@
+
+## 函数用来生成power的数据，返回的是list
+power_data_func <- function(mu=NULL,aa=NULL,bb=1.45,beta2=1,lp,ns,nsim,cut=5,method=NULL){
+    start_time = Sys.time()
+    if(is.null(mu)){mu_alpha=aa;
+        }else {mu_alpha=mu;}
+    
+    waldp1=lrp1=scorep1=ssp1=wald_wrhop=wald_conv=data1=array(dim=c(nsim, length(ns),length(lp), length(mu_alpha)));
+
+    trasfor_pl = lp
+    for(i in 1:length(mu_alpha)){ 
+        for(j in 1:length(lp)){  
+            for(k in 1:length(ns)){ 
+                for(l in 1:nsim){  
+                    x=NULL
+                    if(is.null(method)){yy = rzipois(ns[k],exp(mu_alpha[i]), pstr0 = lp[j])}
+                    else if(method == "unif"){x = runif(ns[k]);yy = rzipois(ns[k],exp(mu_alpha[i]-bb*x), pstr0 = lp[j])}
+                    else if(method =="norm"){x = rnorm(ns[k]);yy = rzipois(ns[k],exp(mu_alpha[i]-bb*x), pstr0 = lp[j])}
+                    else if(method == "norm_logit"){
+                        x = rnorm(ns[k]);trasfor_pl = exp(-lp[j]+beta2*x)/(1+(-lp[j]+beta2*x))
+                        yy = rzipois(ns[k],exp(mu_alpha[i]-bb*x), pstr0 = trasfor_pl)}
+                    else if(method == "unif_logit"){
+                        x = runif(ns[k]);trasfor_pl = exp(-lp[j]+beta2*x)/(1+(-lp[j]+beta2*x))
+                        yy = rzipois(ns[k],exp(mu_alpha[i]-bb*x), pstr0 = trasfor_pl)}
+                    else if(method == "norm_sin"){
+                        x = rnorm(ns[k]);trasfor_pl = lp[j]*abs((sin(4*pi*x)))
+                        yy = rzipois(ns[k],exp(mu_alpha[i]-bb*x), pstr0 = trasfor_pl)}
+                    else if(method == "unif_sin"){
+                        x = runif(ns[k]);trasfor_pl = lp[j]*abs((sin(4*pi*x)))
+                        yy = rzipois(ns[k],exp(mu_alpha[i]-bb*x), pstr0 = trasfor_pl)}
+                    else if(method == "two_norm"){
+                        x1 = rnorm(ns[k]);x2 = rnorm(ns[k]);
+                        x = cbind(x1,x2)
+                        yy = rzipois(ns[k],exp(mu_alpha[i]-0.5*(x1+x2)), pstr0 = lp[j])}
+                    else if(method == "two_unif"){
+                        x1 = runif(ns[k]);x2 = runif(ns[k]);
+                        x = cbind(x1,x2)
+                        yy = rzipois(ns[k],exp(mu_alpha[i]-0.5*(x1+x2)), pstr0 = lp[j])}
+                    else if(method == "two_unifnorm"){
+                        x1 = runif(ns[k]);x2 = rnorm(ns[k]);
+                        x = cbind(x1,x2)
+                        yy = rzipois(ns[k],exp(mu_alpha[i]-0.5*(x1+x2)), pstr0 = lp[j])}
+                    else{return(print("请输入指定方法的字符串"))}
+                    
+                    y = pmin(cut, yy)
+                    rcensored = (y >= cut)
+                    status = ifelse(rcensored, 0, 1)
+                    
+                    data1[l,k,j,i] = sum(yy>=cut)
+                    
+                    try(wald_lr_result <- wald_lr(y,x=x,cut=cut))
+                    try(waldp1[l,k,j,i] <- wald_lr_result$wald)
+                    try(lrp1[l,k,j,i] <- wald_lr_result$lr)
+                    try(scorep1[l,k,j,i] <- score(y,cut=cut,x=x))
+                    try(ssp1[l,k,j,i] <- snew(y,cut=cut,x=x))
+                    try(wald_conv[l,k,j,i] <- wald_lr_result$conv)
+                    try(wald_wrhop[l,k,j,i] <- wald_lr_result$wrhop)
+
+                    
+                    print(paste("current simulation:",mu_alpha[i], lp[j], ns[k], l,
+                                "  he:",round(ssp1[l,k,j,i],3),
+                                "  score:",round(scorep1[l,k,j,i],3),
+                                "  wald:",round(waldp1[l,k,j,i],3),
+                                "  lr:",round(lrp1[l,k,j,i],3)));
+                }
+            }
+        }
+    }
+    print(Sys.time() - start_time)
+    return(list(data1=data1,
+                wald=waldp1,lr=lrp1,score=scorep1,snew=ssp1,
+                lp=trasfor_pl,
+                wald_conv=wald_conv,wald_wrhop=wald_wrhop))
+}
+
+
+
+
+
+## 函数用来生成Type1Error的数据，返回的是list
+type1error_data_func <- function(mu=NULL,aa=NULL,bb=1.45,beta2=1,ns,nsim,cut=5,method=NULL){
+    start_time = Sys.time()
+    if(is.null(mu)){mu_alpha=aa;
+    }else {mu_alpha=mu;}
+    
+    waldp1=lrp1=scorep1=ssp1=wald_wrhop=wald_conv=data1=array(dim=c(nsim, length(ns),length(mu_alpha)));
+    
+    for(i in 1:length(mu_alpha)){ 
+        for(k in 1:length(ns)){ 
+            for(l in 1:nsim){  
+                 x=NULL       
+                if(is.null(method)){yy = rpois(ns[k],exp(mu_alpha[i]))}
+                else if(method == "unif"){x = runif(ns[k]);yy = rpois(ns[k],exp(mu_alpha[i]-bb*x))}
+                else if(method =="norm"){x = rnorm(ns[k]);yy = rpois(ns[k],exp(mu_alpha[i]-bb*x))}
+                else if(method == "two_norm"){
+                    x1 = rnorm(ns[k]);x2 = rnorm(ns[k]);
+                    x = cbind(x1,x2)
+                    yy = rpois(ns[k],exp(mu_alpha[i]-0.5*(x1+x2)))}
+                else if(method == "two_unif"){
+                    x1 = runif(ns[k]);x2 = runif(ns[k]);
+                    x = cbind(x1,x2)
+                    yy = rpois(ns[k],exp(mu_alpha[i]-0.5*(x1+x2)))}
+                else if(method == "two_unifnorm"){
+                    x1 = runif(ns[k]);x2 = rnorm(ns[k]);
+                    x = cbind(x1,x2)
+                    yy = rpois(ns[k],exp(mu_alpha[i]-0.5*(x1+x2)))}
+                else{return(print("请输入指定方法的字符串"))}
+                
+                y = pmin(cut, yy)
+                rcensored = (y >= cut)
+                status = ifelse(rcensored, 0, 1)
+                
+                data1[l,k,i] = sum(yy>=cut)
+                
+                try(wald_lr_result <- wald_lr(y,x=x,cut=cut))
+                try(waldp1[l,k,i] <- wald_lr_result$wald)
+                try(lrp1[l,k,i] <- wald_lr_result$lr)
+                try(scorep1[l,k,i] <- score(y,cut=cut,x=x))
+                try(ssp1[l,k,i] <- snew(y,cut=cut,x=x))
+                try(wald_conv[l,k,i] <- wald_lr_result$conv)
+                try(wald_wrhop[l,k,i] <- wald_lr_result$wrhop)
+                
+                print(paste("current simulation:",mu_alpha[i],ns[k],l,
+                            "  he:",round(ssp1[l,k,i],3),
+                            "  score:",round(scorep1[l,k,i],3),
+                            "  wald:",round(waldp1[l,k,i],3),
+                            "  lr:",round(lrp1[l,k,i],3)));
+            }
+
+        }
+    }
+    print(Sys.time() - start_time)
+    return(list(data1=data1,
+                wald=waldp1,lr=lrp1,score=scorep1,
+                snew=ssp1,
+                wald_conv=wald_conv,wald_wrhop=wald_wrhop))
+}
+
+# 下面是测试代码
+# type1error_data_func(mu=0.5,aa=NULL,bb=1.45,beta2=1,ns=500,nsim=200,cut=4,method=NULL)

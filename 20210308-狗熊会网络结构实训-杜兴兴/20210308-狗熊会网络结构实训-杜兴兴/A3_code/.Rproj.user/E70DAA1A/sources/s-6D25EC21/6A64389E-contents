@@ -1,0 +1,54 @@
+---
+title: "在线课程-网络结构数据Task4"
+author: "杜兴兴"
+date: "2021/3/16"
+output: html_document
+---
+
+## 准备工作
+
+```{r message=F}
+# 清除工作环境
+rm(list = ls())
+library(igraph)  # 加载必要包
+```
+
+## 作业一
+
+```{r}
+dol = read.table("../A2_data/dolphins.txt",header = T)
+g = graph_from_data_frame(dol,directed = F)
+
+set.seed(123456)
+
+V(g)$size = degree(g) # 设置节点大小为节点的度
+V(g)$shape = 'circle'  # 设置节点的形状
+V(g)$label.cex = 0.8
+V(g)$label.dist = 0.05
+V(g)$label.color = 'grey2'
+V(g)[order(degree(g),decreasing = T)]$color = heat.colors(length(V(g)))  # 根据节点的度设置其颜色深度
+E(g)$color = terrain.colors(length(E(g)))  
+
+
+plot(g,
+     layout = layout.fruchterman.reingold,
+     main = "图3.1 海豚网络可视化1")
+plot(g,
+     layout = layout.circle,
+     main = "图3.2 海豚网络可视化2")
+
+```
+
+
+## 选做
+
+截图为3月15日迁入重庆人口主要来源地的网络结构图：
+
+- 节点表示迁入人口来源地；
+- 边表示从某地迁入到重庆市；
+
+节点越大表示迁入人口越多。四川省，贵州省，湖北省，迁入人口位居前三，排在前10名的来源地还有：广东省、云南省、浙江省、湖南省、江苏省、陕西省、上海市。 以上信息来自百度地图迁徙大数据。
+
+![3月15日重庆市人口迁移图](../A2_data/plot1.png)
+
+

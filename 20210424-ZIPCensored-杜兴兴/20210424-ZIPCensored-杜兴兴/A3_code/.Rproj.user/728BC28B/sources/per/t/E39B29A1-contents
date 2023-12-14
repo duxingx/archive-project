@@ -1,0 +1,159 @@
+
+## 清空环境
+rm(list=ls())  
+
+## 加载必要包
+# install.packages("VGAM")
+library(stats4)
+library(splines)
+library(VGAM)   
+
+## 加载程序
+source("./czip_statistics_functions.R")
+source("./czip_parplot_functions.R")
+source("./czip_data_functions.R")
+
+## 配置模拟设置
+set.seed(2021)
+cut=5;
+nsim=200;
+ns=c(50,100,200,500,1000);
+lp=0.01*(seq(5,30,5));
+mu=c(0.5,1,1.5,2);
+aa=c(0.5,1,1.5,2)
+bb=c(0.5,1,1.5,2)
+
+## CASE1：无协变量
+################################################################################
+# 生成数据并保存
+filename = "czip_type1error_case1"
+thistime = gsub(":","-",gsub("\\s", "_", as.character(Sys.time())))
+datacase1 <- type1error_data_func(mu=mu,aa=NULL,bb=1.45,beta2=1,ns,nsim,cut=cut,method=NULL)
+save(datacase1,file=paste("../A2_data/data_",filename,".RData",sep = ""))
+
+# 加载数据并计算
+filename = "czip_type1error_case1"
+load(paste("../A2_data/data_",filename,".RData",sep = ""))
+pw1<-1-pnorm(datacase1$wald);     pl1<-(1-pchisq(datacase1$lr, df=1))/1;
+ps1<-1-pnorm(datacase1$score);    pn1<-1-pnorm(datacase1$snew);
+ 
+# 布图
+filename = "czip_type1error_case1"
+thistime = gsub(":","-",gsub("\\s", "_", as.character(Sys.time())))
+pdf(paste("../A4_report/plot_",filename,"_",thistime,'.pdf',sep=""))
+type1error_plot_par_func(ps=ps1,pw=pw1,pl=pl1,pn=pn1,mu=mu,alpha = NULL,ns = ns,legend_x = -2.65,legend_y = -.65)# x绝对值越大 越左；y绝对值越大 越下；
+dev.off()  
+
+
+## CASE 2：一个服从正态分布N(0,1)的协变量
+################################################################################
+# 生成数据并保存
+filename = "czip_type1error_case2"
+datacase2 <- type1error_data_func(mu=NULL,aa=aa,bb=1.45,beta2=1,ns,nsim,cut=cut,method="norm")
+save(datacase2,file=paste("../A2_data/data_",filename,".RData",sep = ""))
+
+# 加载数据并计算
+filename = "czip_type1error_case2"
+load(paste("../A2_data/data_",filename,".RData",sep = ""))
+pw1<-1-pnorm(datacase2$wald);     pl1<-(1-pchisq(datacase2$lr, df=1))/1;
+ps1<-1-pnorm(datacase2$score);    pn1<-1-pnorm(datacase2$snew);
+
+# 布图
+filename = "czip_type1error_case2"
+thistime = gsub(":","-",gsub("\\s", "_", as.character(Sys.time())))
+pdf(paste("../A4_report/plot_",filename,"_",thistime,'.pdf',sep=""))
+type1error_plot_par_func(ps=ps1,pw=pw1,pl=pl1,pn=pn1,mu=NULL,alpha = aa,ns = ns,legend_x = -3.4,legend_y = -.58)# x绝对值越大 越左；y绝对值越大 越下；
+dev.off()  
+
+
+
+
+## CASE 3：一个服从均匀分布U(0,1)的协变量
+################################################################################
+# 生成数据并保存
+filename = "czip_type1error_case3"
+datacase3 <- type1error_data_func(mu=NULL,aa=aa,bb=1.45,beta2=1,ns,nsim,cut=cut,method="unif")
+save(datacase3,file=paste("../A2_data/data_",filename,".RData",sep = ""))
+
+# 加载数据并计算
+filename = "czip_type1error_case3"
+load(paste("../A2_data/data_",filename,".RData",sep = ""))
+pw1<-1-pnorm(datacase3$wald);     pl1<-(1-pchisq(datacase3$lr, df=1))/1;
+ps1<-1-pnorm(datacase3$score);    pn1<-1-pnorm(datacase3$snew);
+
+# 布图
+filename = "czip_type1error_case3"
+thistime = gsub(":","-",gsub("\\s", "_", as.character(Sys.time())))
+pdf(paste("../A4_report/plot_",filename,"_",thistime,'.pdf',sep=""))
+type1error_plot_par_func(ps=ps1,pw=pw1,pl=pl1,pn=pn1,mu=NULL,alpha = aa,ns = ns,legend_x = -0.3,legend_y = -1.3)# x绝对值越大 越左；y绝对值越大 越下；
+dev.off()  
+
+
+
+## CASE 4：两个服从正态分布N(0,1)的协变量
+################################################################################
+# 生成数据并保存
+filename = "czip_type1error_case4"
+thistime = gsub(":","-",gsub("\\s", "_", as.character(Sys.time())))
+datacase4 <- type1error_data_func(mu=NULL,aa=aa,bb=1.45,beta2=1,ns,nsim,cut=cut,method="two_norm")
+save(datacase4,file=paste("../A2_data/data_",filename,".RData",sep = ""))
+
+# 加载数据并计算
+filename = "czip_type1error_case4"
+load(paste("../A2_data/data_",filename,".RData",sep = ""))
+pw1<-1-pnorm(datacase4$wald);     pl1<-(1-pchisq(datacase4$lr, df=1))/1;
+ps1<-1-pnorm(datacase4$score);    pn1<-1-pnorm(datacase4$snew);
+
+# 布图
+filename = "czip_type1error_case4"
+thistime = gsub(":","-",gsub("\\s", "_", as.character(Sys.time())))
+pdf(paste("../A4_report/plot_",filename,"_",thistime,'.pdf',sep=""))
+type1error_plot_par_func(ps=ps1,pw=pw1,pl=pl1,pn=pn1,mu=NULL,alpha = aa,ns = ns,legend_x = -0.3,legend_y = -1.3)# x绝对值越大 越左；y绝对值越大 越下；
+dev.off()  
+
+
+## CASE 5：两个服从均匀分布U(0,1)的协变量
+################################################################################
+# 生成数据并保存
+filename = "czip_type1error_case5"
+thistime = gsub(":","-",gsub("\\s", "_", as.character(Sys.time())))
+datacase5 <- type1error_data_func(mu=NULL,aa=aa,bb=1.45,beta2=1,ns,nsim,cut=cut,method="two_unif")
+save(datacase5,file=paste("../A2_data/data_",filename,".RData",sep = ""))
+
+# 加载数据并计算
+filename = "czip_type1error_case5"
+load(paste("../A2_data/data_",filename,".RData",sep = ""))
+pw1<-1-pnorm(datacase5$wald);     pl1<-(1-pchisq(datacase5$lr, df=1))/1;
+ps1<-1-pnorm(datacase5$score);    pn1<-1-pnorm(datacase5$snew);
+
+# 布图
+filename = "czip_type1error_case5"
+thistime = gsub(":","-",gsub("\\s", "_", as.character(Sys.time())))
+pdf(paste("../A4_report/plot_",filename,"_",thistime,'.pdf',sep=""))
+type1error_plot_par_func(ps=ps1,pw=pw1,pl=pl1,pn=pn1,mu=NULL,alpha = aa,ns = ns,legend_x = -0.3,legend_y = -1.3)# x绝对值越大 越左；y绝对值越大 越下；
+dev.off()  
+
+
+
+## CASE 6：一个服从正态分布N(0,1)的协变量 + 一个服从均匀分布U(0,1)的协变量
+################################################################################
+# 生成数据并保存
+filename = "czip_type1error_case6"
+datacase6 <- type1error_data_func(mu=NULL,aa=aa,bb=1.45,beta2=1,ns,nsim,cut=cut,method="two_unifnorm")
+save(datacase6,file=paste("../A2_data/data_",filename,".RData",sep = ""))
+
+# 加载数据并计算
+filename = "czip_type1error_case6"
+load(paste("../A2_data/data_",filename,".RData",sep = ""))
+pw1<-1-pnorm(datacase6$wald);     pl1<-(1-pchisq(datacase6$lr, df=1))/1;
+ps1<-1-pnorm(datacase6$score);    pn1<-1-pnorm(datacase6$snew);
+
+# 布图
+filename = "czip_type1error_case6"
+thistime = gsub(":","-",gsub("\\s", "_", as.character(Sys.time())))
+pdf(paste("../A4_report/plot_",filename,"_",thistime,'.pdf',sep=""))
+type1error_plot_par_func(ps=ps1,pw=pw1,pl=pl1,pn=pn1,mu=NULL,alpha = aa,ns = ns,legend_x = -0.3,legend_y = -1.3)# x绝对值越大 越左；y绝对值越大 越下；
+dev.off()  
+
+
+

@@ -1,0 +1,2 @@
+"0","network = graph_from_adjacency_matrix(data)"
+"0","plot(network,vertex.label.cex=.7,vertex.label.dist=.01,sub=""图1.2 六名学者引文关系的网络"")"

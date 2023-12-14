@@ -1,0 +1,5 @@
+"0","data = read.csv(""../A1_literature/football.csv"",head=T)"
+"0",""
+"0","set.seed(123456)"
+"0","network.graph <- graph_from_data_frame(data,directed = F)"
+"0","plot(network.graph,main = ""College Football 社会网络结构无向图"",vertex.label.cex = 0.6)"

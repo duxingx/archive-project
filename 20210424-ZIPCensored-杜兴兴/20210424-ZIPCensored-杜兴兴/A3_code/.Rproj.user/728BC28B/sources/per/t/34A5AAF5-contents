@@ -1,0 +1,275 @@
+
+## 清空环境
+rm(list=ls())  
+
+## 加载必要包
+library(stats4)
+library(splines)
+library(VGAM)   
+
+## 加载程序
+source("./czip_statistics_functions.R")
+source("./czip_parplot_functions.R")
+source("./czip_data_functions.R")
+
+## 配置模拟设置
+set.seed(2021)
+cut=5;
+nsim=200;
+ns=c(50,100,200,500,1000);
+lp=0.01*(seq(5,30,5));
+mu=c(0.5,1,1.5,2);
+aa=c(0.5,1,1.5,2)
+bb=c(0.5,1,1.5,2)
+
+
+
+## CASE 1：无协变量
+################################################################################
+# 生成数据并保存
+filename = "czip_power_case1"
+datacase1 <- power_data_func(mu = mu,aa = NULL,bb = 1.45,lp = lp,ns = ns,nsim = nsim,cut = cut,method = NULL)
+save(datacase1,file=paste("../A2_data/data_",filename,".RData",sep = ""))
+
+# 加载数据并计算
+filename = "czip_power_case1"
+load(paste("../A2_data/data_",filename,".RData",sep = ""))
+pw1<-1-pnorm(datacase1$wald);     pl1<-(1-pchisq(datacase1$lr, df=1))/1;
+ps1<-1-pnorm(datacase1$score);    pn1<-1-pnorm(datacase1$snew);
+pw2=apply(pw1<0.05, 2:4,mean,na.rm=T);  pl2=apply(pl1<0.05, 2:4,mean,na.rm=T);  
+ps2=apply(ps1<0.05, 2:4,mean,na.rm=T);  pn2=apply(pn1<0.05, 2:4,mean,na.rm=T);  
+
+# 布图
+filename = "czip_power_case1"
+thistime = gsub(":","-",gsub("\\s", "_", as.character(Sys.time())))
+pdf(paste("../A4_report/plot_",filename,"_",thistime,'.pdf',sep=""))
+power_plot_par_func(lp = datacase1$lp,ps = ps2,pw = pw2,pl = pl2,pn = pn2,mu = mu,ns = ns,legend_x = -0.6,legend_y = -0.7) # x绝对值越大 越左；y绝对值越大 越下；
+dev.off()  
+
+
+
+## CASE 2：一个服从正态分布N(0,1)的协变量
+################################################################################
+# 生成数据并保存
+filename = "czip_power_case2"
+datacase2 <- power_data_func(mu = NULL,aa = aa,bb = 1.45,lp = lp,ns = ns,nsim = nsim,cut = cut,method = 'norm')
+save(datacase2,file=paste("../A2_data/data_",filename,".RData",sep = ""))
+
+# 加载数据并计算
+filename = "czip_power_case2"
+load(paste("../A2_data/data_",filename,".RData",sep = ""))
+pw1<-1-pnorm(datacase2$wald);     pl1<-(1-pchisq(datacase2$lr, df=1))/1;
+ps1<-1-pnorm(datacase2$score);    pn1<-1-pnorm(datacase2$snew);
+pw2=apply(pw1<0.05, 2:4,mean,na.rm=T);  pl2=apply(pl1<0.05, 2:4,mean,na.rm=T);  
+ps2=apply(ps1<0.05, 2:4,mean,na.rm=T);  pn2=apply(pn1<0.05, 2:4,mean,na.rm=T);  
+
+# 布图
+filename = "czip_power_case2"
+thistime = gsub(":","-",gsub("\\s", "_", as.character(Sys.time())))
+pdf(paste("../A4_report/plot_",filename,"_",thistime,'.pdf',sep=""))
+power_plot_par_func(lp = datacase2$lp,ps = ps2,pw = pw2,pl = pl2,pn = pn2,alpha = aa,ns = ns,legend_x = -0.6,legend_y = -0.7) # x绝对值越大 越左；y绝对值越大 越下；
+dev.off() 
+
+
+
+## CASE 3：一个服从均匀分布U(0,1)的协变量
+################################################################################
+# 生成数据并保存
+filename = "czip_power_case3"
+datacase3 <- power_data_func(mu = NULL,aa = aa,bb = 1.45,lp = lp,ns = ns,nsim = nsim,cut = cut,method = 'unif')
+save(datacase3,file=paste("../A2_data/data_",filename,".RData",sep = ""))
+
+# 加载数据并计算
+filename = "czip_power_case3"
+load(paste("../A2_data/data_",filename,".RData",sep = ""))
+pw1<-1-pnorm(datacase3$wald);     pl1<-(1-pchisq(datacase3$lr, df=1))/1;
+ps1<-1-pnorm(datacase3$score);    pn1<-1-pnorm(datacase3$snew);
+pw2=apply(pw1<0.05, 2:4,mean,na.rm=T);  pl2=apply(pl1<0.05, 2:4,mean,na.rm=T);  
+ps2=apply(ps1<0.05, 2:4,mean,na.rm=T);  pn2=apply(pn1<0.05, 2:4,mean,na.rm=T);  
+
+# 布图
+filename = "czip_power_case3"
+thistime = gsub(":","-",gsub("\\s", "_", as.character(Sys.time())))
+pdf(paste("../A4_report/plot_",filename,"_",thistime,'.pdf',sep=""))
+power_plot_par_func(lp = datacase3$lp,ps = ps2,pw = pw2,pl = pl2,pn = pn2,alpha = aa,ns = ns,legend_x = -0.6,legend_y = -0.7) # x绝对值越大 越左；y绝对值越大 越下；
+dev.off() 
+
+
+
+## CASE 4：两个服从正态分布N(0,1)的协变量
+################################################################################
+# 生成数据并保存
+filename = "czip_power_case4"
+thistime = gsub(":","-",gsub("\\s", "_", as.character(Sys.time())))
+datacase4 <- power_data_func(mu = NULL,aa = aa,bb = 1.45,lp = lp,ns = ns,nsim = nsim,cut = cut,method = 'two_norm')
+save(datacase4,file=paste("../A2_data/data_",filename,".RData",sep = ""))
+
+# 加载数据并计算
+filename = "czip_power_case4"
+load(paste("../A2_data/data_",filename,".RData",sep = ""))
+pw1<-1-pnorm(datacase4$wald);     pl1<-(1-pchisq(datacase4$lr, df=1))/1;
+ps1<-1-pnorm(datacase4$score);    pn1<-1-pnorm(datacase4$snew);
+pw2=apply(pw1<0.05, 2:4,mean,na.rm=T);  pl2=apply(pl1<0.05, 2:4,mean,na.rm=T);  
+ps2=apply(ps1<0.05, 2:4,mean,na.rm=T);  pn2=apply(pn1<0.05, 2:4,mean,na.rm=T);  
+
+# 布图
+filename = "czip_power_case4"
+thistime = gsub(":","-",gsub("\\s", "_", as.character(Sys.time())))
+pdf(paste("../A4_report/plot_",filename,"_",thistime,'.pdf',sep=""))
+power_plot_par_func(lp = datacase4$lp,ps = ps2,pw = pw2,pl = pl2,pn = pn2,alpha = aa,ns = ns,legend_x = -0.6,legend_y = -0.7) # x绝对值越大 越左；y绝对值越大 越下；
+dev.off() 
+
+
+
+## CASE 5：两个服从均匀分布U(0,1)的协变量
+################################################################################
+# 生成数据并保存
+filename = "czip_power_case5"
+datacase5 <- power_data_func(mu = NULL,aa = aa,bb = 1.45,lp = lp,ns = ns,nsim = nsim,cut = cut,method = 'two_unif')
+save(datacase5,file=paste("../A2_data/data_",filename,".RData",sep = ""))
+
+# 加载数据并计算
+filename = "czip_power_case5"
+load(paste("../A2_data/data_",filename,".RData",sep = ""))
+pw1<-1-pnorm(datacase5$wald);     pl1<-(1-pchisq(datacase5$lr, df=1))/1;
+ps1<-1-pnorm(datacase5$score);    pn1<-1-pnorm(datacase5$snew);
+pw2=apply(pw1<0.05, 2:4,mean,na.rm=T);  pl2=apply(pl1<0.05, 2:4,mean,na.rm=T);  
+ps2=apply(ps1<0.05, 2:4,mean,na.rm=T);  pn2=apply(pn1<0.05, 2:4,mean,na.rm=T);  
+
+# 布图
+filename = "czip_power_case5"
+thistime = gsub(":","-",gsub("\\s", "_", as.character(Sys.time())))
+pdf(paste("../A4_report/plot_",filename,"_",thistime,'.pdf',sep=""))
+power_plot_par_func(lp = datacase5$lp,ps = ps2,pw = pw2,pl = pl2,pn = pn2,alpha = aa,ns = ns,legend_x = -0.6,legend_y = -0.7) # x绝对值越大 越左；y绝对值越大 越下；
+dev.off() 
+
+
+
+## CASE 6：一个服从正态分布N(0,1)的协变量 + 一个服从均匀分布U(0,1)的协变量
+################################################################################
+# 生成数据并保存
+filename = "czip_power_case6"
+datacase6 <- power_data_func(mu = NULL,aa = aa,bb = 1.45,lp = lp,ns = ns,nsim = nsim,cut = cut,method = 'two_unif')
+save(datacase6,file=paste("../A2_data/data_",filename,".RData",sep = ""))
+
+# 加载数据并计算
+filename = "czip_power_case6"
+load(paste("../A2_data/data_",filename,".RData",sep = ""))
+pw1<-1-pnorm(datacase6$wald);     pl1<-(1-pchisq(datacase6$lr, df=1))/1;
+ps1<-1-pnorm(datacase6$score);    pn1<-1-pnorm(datacase6$snew);
+pw2=apply(pw1<0.05, 2:4,mean,na.rm=T);  pl2=apply(pl1<0.05, 2:4,mean,na.rm=T);  
+ps2=apply(ps1<0.05, 2:4,mean,na.rm=T);  pn2=apply(pn1<0.05, 2:4,mean,na.rm=T);  
+
+# 布图
+filename = "czip_power_case6"
+thistime = gsub(":","-",gsub("\\s", "_", as.character(Sys.time())))
+pdf(paste("../A4_report/plot_",filename,"_",thistime,'.pdf',sep=""))
+power_plot_par_func(lp = datacase6$lp,ps = ps2,pw = pw2,pl = pl2,pn = pn2,alpha = aa,ns = ns,legend_x = -0.6,legend_y = -0.7) # x绝对值越大 越左；y绝对值越大 越下；
+dev.off() 
+
+
+
+## CASE 7：一个服从正态分布N(0,1)的协变量 + logit变换的omega
+################################################################################
+# 生成数据并保存
+filename = "czip_power_case7"
+thistime = gsub(":","-",gsub("\\s", "_", as.character(Sys.time())))
+datacase7 <- power_data_func(mu = NULL,aa = aa,bb = 1.45,lp = lp,ns = ns,nsim = nsim,cut = cut,method = 'norm_logit')
+save(datacase7,file=paste("../A2_data/data_",filename,"_",thistime,".RData",sep = ""))
+
+# 加载数据并计算
+load(paste("../A2_data/data_",filename,"_",thistime,".RData",sep = ""))
+pw1<-1-pnorm(datacase7$wald);     pl1<-(1-pchisq(datacase7$lr, df=1))/1;
+ps1<-1-pnorm(datacase7$score);    pn1<-1-pnorm(datacase7$snew);
+pw2=apply(pw1<0.05, 2:4,mean,na.rm=T);  pl2=apply(pl1<0.05, 2:4,mean,na.rm=T);
+ps2=apply(ps1<0.05, 2:4,mean,na.rm=T);  pn2=apply(pn1<0.05, 2:4,mean,na.rm=T);
+
+# 布图
+pdf(paste("../A4_report/plot_",filename,"_",thistime,'.pdf',sep=""))
+power_plot_par_func(lp = datacase7$lp,ps = ps2,pw = pw2,pl = pl2,pn = pn2,alpha = aa,ns = ns,legend_x = -0.6,legend_y = -0.7) # x绝对值越大 越左；y绝对值越大 越下；
+dev.off()
+
+
+
+## CASE 8：一个服从均匀分布U(0,1)的协变量 + logit变换的omega
+################################################################################
+# 生成数据并保存
+filename = "czip_power_case8"
+thistime = gsub(":","-",gsub("\\s", "_", as.character(Sys.time())))
+datacase8 <- power_data_func(mu = NULL,aa = aa,bb = 1.45,lp = lp,ns = ns,nsim = nsim,cut = cut,method = 'unif_logit')
+save(datacase8,file=paste("../A2_data/data_",filename,"_",thistime,".RData",sep = ""))
+
+# 加载数据并计算
+filename = "czip_power_case8"
+load(paste("../A2_data/data_",filename,".RData",sep = ""))
+pw1<-1-pnorm(datacase8$wald);     pl1<-(1-pchisq(datacase8$lr, df=1))/1;
+ps1<-1-pnorm(datacase8$score);    pn1<-1-pnorm(datacase8$snew);
+pw2=apply(pw1<0.05, 2:4,mean,na.rm=T);  pl2=apply(pl1<0.05, 2:4,mean,na.rm=T);
+ps2=apply(ps1<0.05, 2:4,mean,na.rm=T);  pn2=apply(pn1<0.05, 2:4,mean,na.rm=T);
+
+# 布图
+filename = "czip_power_case8"
+thistime = gsub(":","-",gsub("\\s", "_", as.character(Sys.time())))
+pdf(paste("../A4_report/plot_",filename,"_",thistime,'.pdf',sep=""))
+power_plot_par_func(lp = datacase8$lp,ps = ps2,pw = pw2,pl = pl2,pn = pn2,alpha = aa,ns = ns,legend_x = -0.6,legend_y = -0.7) # x绝对值越大 越左；y绝对值越大 越下；
+dev.off()
+
+
+
+## CASE 9：一个服从正态分布N(0,1)的协变量 + sin非线性变换的omega
+################################################################################
+# 生成数据并保存
+filename = "czip_power_case9"
+datacase9 <- power_data_func(mu = NULL,aa = aa,bb = 1.45,lp = lp,ns = ns,nsim = nsim,cut = cut,method = 'norm_sin')
+save(datacase9,file=paste("../A2_data/data_",filename,".RData",sep = ""))
+
+# 加载数据并计算
+filename = "czip_power_case9"
+load(paste("../A2_data/data_",filename,".RData",sep = ""))
+pw1<-1-pnorm(datacase9$wald);     pl1<-(1-pchisq(datacase9$lr, df=1))/1;
+ps1<-1-pnorm(datacase9$score);    pn1<-1-pnorm(datacase9$snew);
+pw2=apply(pw1<0.05, 2:4,mean,na.rm=T);  pl2=apply(pl1<0.05, 2:4,mean,na.rm=T);  
+ps2=apply(ps1<0.05, 2:4,mean,na.rm=T);  pn2=apply(pn1<0.05, 2:4,mean,na.rm=T);  
+
+# 布图
+filename = "czip_power_case9"
+thistime = gsub(":","-",gsub("\\s", "_", as.character(Sys.time())))
+pdf(paste("../A4_report/plot_",filename,"_",thistime,'.pdf',sep=""))
+power_plot_par_func(lp = datacase9$lp,ps = ps2,pw = pw2,pl = pl2,pn = pn2,alpha = aa,ns = ns,legend_x = -0.6,legend_y = -0.7) # x绝对值越大 越左；y绝对值越大 越下；
+dev.off() 
+
+
+
+## CASE 10：一个服从均匀分布U(0,1)的协变量 + sin非线性变换的omega
+################################################################################
+# 生成数据并保存
+filename = "czip_power_case10"
+datacase10 <- power_data_func(mu = NULL,aa = aa,bb = 1.45,lp = lp,ns = ns,nsim = nsim,cut = cut,method = 'unif_sin')
+save(datacase10,file=paste("../A2_data/data_",filename,".RData",sep = ""))
+
+# 加载数据并计算
+filename = "czip_power_case10"
+load(paste("../A2_data/data_",filename,".RData",sep = ""))
+pw1<-1-pnorm(datacase10$wald);     pl1<-(1-pchisq(datacase10$lr, df=1))/1;
+ps1<-1-pnorm(datacase10$score);    pn1<-1-pnorm(datacase10$ss);
+pw2=apply(pw1<0.05, 2:4,mean,na.rm=T);  pl2=apply(pl1<0.05, 2:4,mean,na.rm=T);  
+ps2=apply(ps1<0.05, 2:4,mean,na.rm=T);  pn2=apply(pn1<0.05, 2:4,mean,na.rm=T);  
+
+# 布图
+filename = "czip_power_case10"
+thistime = gsub(":","-",gsub("\\s", "_", as.character(Sys.time())))
+pdf(paste("../A4_report/plot_",filename,"_",thistime,'.pdf',sep=""))
+power_plot_par_func(lp = datacase10$lp,ps = ps2,pw = pw2,pl = pl2,pn = pn2,alpha = aa,ns = ns,legend_x = -0.6,legend_y = -0.7) # x绝对值越大 越左；y绝对值越大 越下；
+dev.off() 
+
+
+
+## CASE 11：两个服从均匀分布U(0,1)的协变量 + sin非线性变换的omega
+################################################################################
+## CASE 12：两个服从正态分布N(0,1)的协变量 + sin非线性变换的omega
+################################################################################
+## CASE 13：两个服从均匀分布U(0,1)的协变量 + logit变换的omega
+################################################################################
+## CASE 14：两个服从正态分布N(0,1)的协变量 + logit变换的omega
+################################################################################
+

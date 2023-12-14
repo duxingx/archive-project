@@ -1,0 +1,7 @@
+"0","data <- read.csv(file=""../A2_data/game of thrones/got-edges.csv"",header = T)"
+"0","set.seed(123456) "
+"0",""
+"0","graph2 <- graph_from_data_frame(data,directed = F)  # 创建网络"
+"2","Error in graph_from_data_frame(data, directed = F) : 
+  没有""graph_from_data_frame""这个函数
+"

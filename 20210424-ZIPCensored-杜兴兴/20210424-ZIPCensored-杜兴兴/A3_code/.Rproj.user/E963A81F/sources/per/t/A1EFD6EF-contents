@@ -1,0 +1,156 @@
+library(stats4)
+library(splines)
+library(VGAM)
+
+loglikelihood  <-function(theta, y, x=NULL,cut=15){
+    if (is.null(x)){
+        xmatrix=matrix(1,nrow=length(y),ncol=1);
+    }else  {xmatrix=cbind(1,x);}
+    rho=theta[1];
+    beta=theta[-1];
+    pred=exp(xmatrix %*% beta);
+    like= (y<cut) * (  (y==0) * log((rho+(1-rho)*exp(-pred)))  +   (y>0) * log((1-rho)*dpois(y,pred))  )
+            + (y>=cut)*log((1-rho)*ppois(cut,pred,lower.tail = F))
+    llike = sum(like)
+    return(llike);
+}
+
+
+LR<-function(y,status,x=NULL,cut=15){
+    test<-NULL;
+    n<-length(y);
+    if (is.null(x)){
+        a <- vglm(SurvS4(y, status)~1,cens.poisson)
+        zz<-optim( c(0, coef(a)), loglikelihood,hessian=T,  y=y,cut=cut,control=list(fnscale=-1));
+    }else {
+        a <- vglm(SurvS4(y, status)~x,cens.poisson)
+        zz<-optim( c(0, coef(a)), loglikelihood, hessian=T, y=y,x=x,cut=cut, control=list(fnscale=-1));
+    }
+    test$conv = zz$convergence;
+    test$wrhop = zz$par[1];
+    test$value = as.numeric(-2*zz$value-2*logLik(a))
+    return(test);
+}
+
+wald<-function(y,status,x=NULL,cut=15){
+    test<-NULL;
+    n<-length(y);
+    if (is.null(x)){
+        cov=matrix(1,nrow=n,ncol=1);
+        a <- vglm(SurvS4(y, status)~1,cens.poisson)
+        zz<-optim( c(0, coef(a)), loglikelihood,hessian=T,  y=y,cut=cut, control=list(fnscale=-1));
+    }else {
+        a <- vglm(SurvS4(y, status)~x,cens.poisson)
+        zz<-optim( c(0, coef(a)), loglikelihood, hessian=T, y=y,x=x,cut=cut, control=list(fnscale=-1));
+    }
+    aa<-zz$par;
+    OI<-solve(-zz$hessian,tol = 1e-40)
+    se<-sqrt(diag(OI))
+    test$conv = zz$convergence;
+    test$wrhop = zz$par[1];
+    test$value = as.numeric(aa[1]/se[1])
+    return(test);
+}
+
+
+
+wald_lr<-function(y,status,x=NULL,cut=15){
+    test<-NULL;
+    n<-length(y);
+    if (is.null(x)){
+        cov=matrix(1,nrow=n,ncol=1);
+        a <- vglm(SurvS4(y, status)~1,cens.poisson)
+        zz<-optim( c(0, coef(a)), loglikelihood,hessian=T,  y=y,cut=cut, control=list(fnscale=-1));
+    }else {
+        a <- vglm(SurvS4(y, status)~x,cens.poisson)
+        zz<-optim( c(0, coef(a)), loglikelihood, hessian=T, y=y,x=x,cut=cut, control=list(fnscale=-1));
+    }
+    aa<-zz$par;
+    
+    OI<-solve(-zz$hessian,tol = 1e-40)
+    se<-sqrt(diag(OI))
+    test$wald <- as.numeric(aa[1]/se[1])
+    test$lr <- as.numeric(2*zz$value-2*logLik(a))
+    test$conv = zz$convergence;
+    test$wrhop = zz$par[1];
+    return(test)
+}
+
+
+
+score<- function(y,status,x=NULL,cut=15) {
+    n=length(y);
+    if (is.null(x)){
+        ex <- vglm(SurvS4(y, status)~1,cens.poisson, na.action = na.omit);
+        cov=matrix(rep(1,n),ncol=1);
+    } else {
+        ex <- vglm(SurvS4(y, status)~x,cens.poisson, na.action = na.omit);
+        cov=cbind(1,x);
+    }
+    
+    beta=coef(ex);
+    p=length(beta);
+    mu= exp(cov %*% beta );
+    ci=ppois(cut,mu,lower.tail = F);
+    ri= (y==0);
+    pi=exp(-mu);
+    
+    dU=matrix(rep(0, n^2), nrow=n);
+    diag(dU)= (y<cut)*(-mu*ri+(1-ri)*(y-mu))+(y>=cut)*mu*dpois(cut-1,mu)/ci
+
+    uWT1=t(cov)%*%dU;
+    uWT2=-1+ri*(y<cut)/pi;
+    
+    L11=uWT1%*%t(uWT1);
+    L12=uWT1%*%(uWT2)
+    L21=t(L12)
+    L22=t(uWT2)%*%(uWT2)
+    LL=rbind(cbind(L11,L12),cbind(L21,L22));
+    
+    score<-sum(-1+ri*(y<cut)/pi)*sqrt(solve(LL)[p+1,p+1]); 
+    return(score);
+}
+
+snew<- function(y,status,x=NULL,cut=15) {
+    n=length(y);
+    if (is.null(x)){
+        ex <- vglm(SurvS4(y, status)~1,cens.poisson, na.action = na.omit);
+        cov=matrix(rep(1,n),ncol=1);
+    } else {
+        ex <- vglm(SurvS4(y, status)~x,cens.poisson, na.action = na.omit);
+        cov=cbind(1,x);
+    }
+    
+    beta=coef(ex);
+    p=length(beta);
+    mu= exp(cov %*% beta );
+    ci=ppois(cut,mu,lower.tail = F);
+    ri= (y==0);
+    pi=exp(-mu);
+    
+    dU=matrix(rep(0, n^2), nrow=n);
+    diag(dU)=(y<cut)*(y-mu)+(y>=cut)*mu*dpois(cut-1,mu)/ci;
+    uWT1=ri-pi;
+    uWT2=t(cov)%*%dU;
+    
+    A11=-n;
+    A12=t(uWT1)%*%t(uWT2);
+    A21=matrix(rep(0,p),ncol=1);
+    A22=uWT2%*%t(uWT2);
+    AA=rbind(cbind(A11,-A12),cbind(A21,-A22));
+    A=AA/n;
+    
+    B11=t(uWT1)%*%uWT1;
+    B12=t(uWT1)%*%t(uWT2);
+    B22=uWT2%*%t(uWT2);
+    B21=t(B12);
+    BB=rbind(cbind(B11,B12),cbind(B21,B22));
+    B=BB/n;
+    
+    TT=solve(A)%*%B%*%t(solve(A));
+    
+    snew<-(sqrt(n)*mean(ri-pi))/sqrt((TT)[1,1]); 
+    return(snew);
+    
+}
+

@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<backups>
+<backup>
+	<name></name>
+	<type></type> <!--完全备份0,增量备份1,B树备份 -->
+	<baseBackupDir></baseBackupDir> <!--基备份目录(可以为多个) -->
+	<backupPath></backupPath>	<!--备份路径 -->
+	<maxSize></maxSize>	<!--备份最大大小(单位:M,最小值16M) -->
+	<isCompressed></isCompressed>	<!--备份是否压缩 -->
+	<encryptType></encryptType><!--加密类型：0表示不加密，1表示简单口令加密，2表示完全数据加密 -->
+	<password></password>	<!--加密密码-->
+	<parallelPath></parallelPath>	<!--并行文件路径-->
+	<description></description>	<!--备份描述-->
+</backup>
+</backups>

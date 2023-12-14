@@ -1,0 +1,57 @@
+---
+title: "在线课程-网络结构数据Task2"
+author: "杜兴兴"
+date: "2021/3/12"
+output: html_document
+---
+
+## 准备工作
+
+```{r}
+# 清除工作环境
+rm(list = ls())
+library(igraph)  # 加载必要包
+```
+
+## 作业一：构建网络。
+
+```{r}
+data = read.csv("../A1_literature/football.csv",head=T)
+
+set.seed(123456)
+network.graph <- graph_from_data_frame(data,directed = F)
+plot(network.graph,main = "College Football 社会网络结构无向图",vertex.label.cex = 0.6)
+```
+
+## 作业二：对生成的网络做适当解读。
+
+从网络结构图以及结果中可以得到，一共有115个节点，613条边，每个节点表示一个足球队，连边表示两只球队进行过一场比赛。另外可以从图中发现，在某些节点的网络关系呈现聚集性。
+
+
+## 选做：
+
+找到game of thrones文件夹中的got-edges.csv数据，尝试利用该数据使用graph_from_data_frame()构建无向网络。（数据集说明：该数据为George R. R. Martin的《A Storm of Swords》中人物关系的网络数据，其中每个节点表示不同的角色，边代表这些角色是否同时出现。）
+
+```{r}
+data <- read.csv(file="../A1_literature/game of thrones/got-edges.csv",header = T)
+
+set.seed(1123456)
+network.graph2 <- graph_from_data_frame(data,directed = F)
+deg = degree(network.graph2,mode="all")
+E(network.graph2)$width=E(network.graph2)$Weight * 0.05
+
+plot(network.graph2,vertex.label.cex  = 0.6,main="人物关系的无向网络图")
+
+
+plot(network.graph2,
+     vertex.size=10,      #点的度数越大，绘制的点越大
+     vertex.label.cex=.6,    #节点的标签字号
+     edge.label = E(network.graph2)$Weight,    #标记边的权重
+     edge.label.cex = .5,    #标记边权的字号
+     edge.label.color = "red", #边权字体颜色
+     edge.color="black",    #边的颜色
+     main = "人物关系的无向网络图")
+
+```
+
+

@@ -1,0 +1,7 @@
+"0","# 清除工作环境"
+"0","rm(list = ls())"
+"0","# 加载必要包"
+"0","library(igraph)  "
+"0","library(dplyr)"
+"0","library(plyr)"
+"0","library(ggplot2)"

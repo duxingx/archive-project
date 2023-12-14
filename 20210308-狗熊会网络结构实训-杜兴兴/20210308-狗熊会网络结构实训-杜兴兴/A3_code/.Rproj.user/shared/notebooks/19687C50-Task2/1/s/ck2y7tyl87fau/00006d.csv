@@ -1,0 +1,8 @@
+"0","data <- read.csv(file=""../A1_literature/game of thrones/got-edges.csv"",header = T)"
+"0",""
+"0","set.seed(1123456)"
+"0","network.graph2 <- graph_from_data_frame(data,directed = F)"
+"0","deg = degree(network.graph2,mode=""all"")"
+"0","E(network.graph2)$width=E(network.graph2)$Weight * 0.05"
+"0",""
+"0","plot(network.graph2,vertex.label.cex  = 0.6,main=""人物关系的无向网络图"")"
